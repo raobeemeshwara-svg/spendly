@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Spendly</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Manrope:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<style>
+:root{--bg:#EEF1F7;--card:#fff;--ink:#12151F;--mute:#6B7285;--line:#E3E7F0;--brand:#4F46E5;--brand2:#7C6BFF;--in:#0E9F6E;--out:#E5484D;--r:22px;--sh:0 1px 2px rgba(18,21,31,.04),0 12px 32px -12px rgba(40,50,110,.14)}
+*{box-sizing:border-box;margin:0}html{-webkit-text-size-adjust:100%}
+body{font:500 15px/1.5 Manrope,system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding:env(safe-area-inset-top) 0 0}
+h1,h2,h3,.num{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.03em}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid #C7C3FF;outline-offset:2px}
+.hide{display:none!important}
+/* auth */
+.auth{min-height:100vh;display:grid;grid-template-columns:1.1fr 1fr}
+.pitch{background:radial-gradient(900px 500px at 10% 0,#6D63FF 0,transparent 60%),linear-gradient(160deg,#1B1747,#0F1030);color:#fff;padding:56px;display:flex;flex-direction:column;justify-content:space-between}
+.pitch h1{font-size:clamp(40px,5vw,68px);line-height:1;font-weight:800;max-width:11ch}
+.pitch p{color:#C9C7F5;max-width:36ch;margin-top:18px}
+.logo{font:800 24px 'Bricolage Grotesque';letter-spacing:-.04em;display:flex;gap:10px;align-items:center}
+.logo i{width:30px;height:30px;border-radius:10px;background:linear-gradient(135deg,var(--brand2),var(--brand));display:inline-block}
+.formwrap{display:grid;place-items:center;padding:32px}
+.box{width:min(400px,100%)}
+.box h2{font-size:32px;margin-bottom:6px}.sub{color:var(--mute);margin-bottom:22px}
+label{display:block;font-weight:700;font-size:13px;margin:14px 0 6px}
+input,select{width:100%;padding:14px 16px;border:1.5px solid var(--line);border-radius:14px;background:#fff;transition:border-color .15s}
+input:focus,select:focus{border-color:var(--brand);outline:none}
+.btn{border:0;border-radius:14px;padding:14px 18px;font-weight:700;cursor:pointer;background:var(--brand);color:#fff;width:100%;margin-top:18px;transition:transform .12s,background .15s}
+.btn:hover{background:#4338CA}.btn:active{transform:scale(.98)}.btn[disabled]{opacity:.6;cursor:wait}
+.btn.alt{background:#fff;color:var(--ink);border:1.5px solid var(--line)}.btn.alt:hover{background:#F7F8FC}
+.btn.sm{width:auto;margin:0;padding:10px 14px;font-size:14px}.btn.danger{background:var(--out)}
+.link{background:none;border:0;color:var(--brand);font-weight:700;cursor:pointer;padding:0}
+.msg{margin-top:14px;padding:12px 14px;border-radius:12px;font-size:14px;background:#FFF0F0;color:#A4262C}.msg.ok{background:#E9F8F1;color:#0B6B4A}
+.or{display:flex;align-items:center;gap:12px;color:var(--mute);margin:18px 0 0;font-size:13px}.or:before,.or:after{content:"";flex:1;height:1px;background:var(--line)}
+/* app */
+.app{display:grid;grid-template-columns:250px 1fr;min-height:100vh}
+.side{padding:24px 18px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:6px}
+.side .logo{margin:0 8px 22px;color:var(--ink)}
+.nav{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;border:0;background:none;font-weight:700;color:var(--mute);cursor:pointer;text-align:left;width:100%}
+.nav:hover{background:#fff}.nav.on{background:#fff;color:var(--brand);box-shadow:var(--sh)}
+main{padding:32px clamp(18px,4vw,48px) 100px;max-width:1100px;width:100%}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:26px;flex-wrap:wrap}
+.top h1{font-size:34px}.grid{display:grid;gap:16px}.g3{grid-template-columns:repeat(3,1fr)}.g2{grid-template-columns:1.5fr 1fr}
+.card{background:var(--card);border-radius:var(--r);padding:22px;box-shadow:var(--sh)}
+.card h3{font-size:17px;margin-bottom:14px}
+.hero{background:linear-gradient(150deg,#4F46E5,#2A2290);color:#fff;grid-column:1/-1;padding:30px}
+.hero .num{font-size:clamp(44px,7vw,72px);font-weight:800;line-height:1.05;margin:6px 0 16px}
+.hero small{color:#CFCBFF}.row{display:flex;gap:28px;flex-wrap:wrap}.row b{font-size:20px;display:block}
+.k{color:var(--mute);font-size:13px;font-weight:700}.num{font-weight:800}
+.in{color:var(--in)}.out{color:var(--out)}
+.item{display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid var(--line)}.item:last-child{border:0}
+.dot{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-weight:800;background:#EFEDFF;color:var(--brand);flex:none}
+.grow{flex:1;min-width:0}.grow div:first-child{font-weight:700}.grow .k{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.x{border:0;background:none;color:var(--mute);cursor:pointer;font-size:18px;padding:6px}.x:hover{color:var(--out)}
+.bar{height:10px;border-radius:9px;background:#EDEFF7;overflow:hidden;margin-top:10px}.bar i{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,var(--brand2),var(--brand));transition:width .5s}.bar i.over{background:var(--out)}
+.empty{text-align:center;padding:34px 12px;color:var(--mute)}.empty b{display:block;color:var(--ink);font-size:17px;margin-bottom:4px}
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;align-items:end}.form label{margin:0 0 6px}.form .btn{margin:0}
+.seg{display:flex;background:#EDEFF7;border-radius:14px;padding:4px}.seg button{flex:1;border:0;background:none;padding:10px;border-radius:11px;font-weight:700;cursor:pointer;color:var(--mute)}.seg button.on{background:#fff;color:var(--ink);box-shadow:var(--sh)}
+.sw{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}.sw input{width:22px;height:22px;accent-color:var(--brand)}
+.toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 18px;border-radius:14px;font-weight:700;z-index:50;box-shadow:var(--sh)}
+.modal{position:fixed;inset:0;background:rgba(18,21,31,.5);display:grid;place-items:center;padding:20px;z-index:60}.modal .card{max-width:520px;max-height:80vh;overflow:auto}
+.spin{width:44px;height:44px;border-radius:50%;border:4px solid #DDE0F5;border-top-color:var(--brand);animation:s .8s linear infinite;margin:40vh auto}@keyframes s{to{transform:rotate(360deg)}}
+@media(max-width:860px){
+.auth{grid-template-columns:1fr}.pitch{padding:28px 24px;min-height:300px}.app{grid-template-columns:1fr}
+.side{position:fixed;bottom:0;left:0;right:0;top:auto;height:auto;flex-direction:row;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);padding:8px 8px calc(8px + env(safe-area-inset-bottom));z-index:40;border-top:1px solid var(--line);gap:0}
+.side .logo,.side .push{display:none}.nav{flex-direction:column;gap:2px;font-size:11px;padding:8px 2px;justify-content:center;align-items:center;text-align:center}
+.g3,.g2{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head><body>
+<div id="boot"><div class="spin" role="status" aria-label="Loading"></div></div>
+<div id="root"></div>
+<script>
+/* ---- CONFIG: paste from Supabase > Project Settings > API (anon key is public by design; NEVER put the service_role key here) ---- */
+const SUPABASE_URL='YOUR_SUPABASE_URL', SUPABASE_ANON_KEY='YOUR_SUPABASE_ANON_KEY';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+const $=s=>document.querySelector(s), root=$('#root');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=n=>new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n||0);
+const iso=d=>{const z=new Date(d);return z.getFullYear()+'-'+String(z.getMonth()+1).padStart(2,'0')+'-'+String(z.getDate()).padStart(2,'0')};
+const CATS=['Food','Transport','Shopping','Bills','Health','Fun','Other'];
+let S={user:null,tx:[],bud:[],goals:[],prof:null,pref:null,view:'dash',type:'expense',filter:'all'};
+function toast(t){document.querySelector('.toast')?.remove();const e=document.createElement('div');e.className='toast';e.textContent=t;document.body.append(e);setTimeout(()=>e.remove(),2600)}
+const fail=e=>{console.error(e);toast(e?.message?'Something went wrong: '+e.message:'Something went wrong. Try again.')};
+
+/* ---------- AUTH ---------- */
+let mode='login';
+function authView(note,ok){
+ const L=mode==='login',R=mode==='reset';
+ root.innerHTML=`<div class="auth"><section class="pitch"><div class="logo"><i></i>Spendly</div><div><h1>Know where every rupee goes.</h1><p>Log a spend in seconds. See your day, week and month at a glance.</p></div><small style="color:#9F9CD8">Spendly by Bhimeshwara Rao · Your data is private to your account.</small></section>
+ <section class="formwrap"><form class="box" id="af" novalidate><h2>${R?'Reset password':L?'Welcome back':'Create your account'}</h2><p class="sub">${R?'We will email you a reset link.':L?'Log in to your dashboard.':'Verify your email to get started.'}</p>
+ ${R?'':'<button type="button" class="btn alt" id="g" style="margin-top:0">Continue with Google</button><div class="or">or</div>'}
+ <label for="em">Email</label><input id="em" type="email" autocomplete="email" required>
+ ${R?'':`<label for="pw">Password</label><input id="pw" type="password" autocomplete="${L?'current-password':'new-password'}" minlength="8" required>`}
+ <button class="btn" id="sbm">${R?'Send reset link':L?'Log in':'Sign up'}</button>
+ ${note?`<div class="msg ${ok?'ok':''}" role="alert">${esc(note)}</div>`:''}
+ <p style="margin-top:18px;text-align:center" class="k">${L?`<button type="button" class="link" data-m="reset">Forgot password?</button> · <button type="button" class="link" data-m="signup">Create account</button>`:`<button type="button" class="link" data-m="login">Back to log in</button>`}</p></form></section></div>`;
+ root.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{mode=b.dataset.m;authView()});
+ $('#g')?.addEventListener('click',()=>sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin}}).then(r=>r.error&&authView('Google sign-in failed. '+r.error.message)));
+ $('#af').onsubmit=async e=>{e.preventDefault();const em=$('#em').value.trim(),pw=$('#pw')?.value||'',b=$('#sbm');
+  if(!/^\S+@\S+\.\S+$/.test(em))return authView('Enter a valid email address.');
+  if(!R&&pw.length<8)return authView('Password must be at least 8 characters.');
+  b.disabled=true;b.textContent='Please wait…';let r;
+  try{
+   if(R){r=await sb.auth.resetPasswordForEmail(em,{redirectTo:location.origin});return authView(r.error?'Could not send the email. Try again shortly.':'If that email has an account, a reset link is on its way.',!r.error)}
+   if(L){r=await sb.auth.signInWithPassword({email:em,password:pw});if(r.error)return authView(r.error.message.includes('not confirmed')?'Verify your email first. Check your inbox for the link.':'Incorrect email or password.')}
+   else{r=await sb.auth.signUp({email:em,password:pw,options:{emailRedirectTo:location.origin}});if(r.error)return authView(r.error.message);
+    if(r.data.user&&r.data.user.identities?.length===0)return authView('This email is already registered. Log in instead.');
+    mode='login';return authView('Check your inbox to verify your email, then log in.',true)}
+  }catch(x){authView('Network problem. Check your connection and try again.')}};
+}
+function recoveryView(){
+ root.innerHTML=`<div class="formwrap" style="min-height:100vh"><form class="box" id="rf"><h2>Set a new password</h2><p class="sub">Choose at least 8 characters.</p><label for="np">New password</label><input id="np" type="password" minlength="8" autocomplete="new-password" required><button class="btn">Update password</button><div id="rm"></div></form></div>`;
+ $('#rf').onsubmit=async e=>{e.preventDefault();const {error}=await sb.auth.updateUser({password:$('#np').value});
+  if(error)$('#rm').innerHTML=`<div class="msg">${esc(error.message)}</div>`;else{history.replaceState(null,'',location.pathname);boot()}};
+}
+sb.auth.onAuthStateChange((ev,ses)=>{
+ $('#boot').classList.add('hide');
+ if(ev==='PASSWORD_RECOVERY')return recoveryView();
+ if(ev==='SIGNED_OUT'){S.user=null;return authView()}
+ if(ses&&ev!=='TOKEN_REFRESHED'&&ev!=='USER_UPDATED'&&S.user?.id!==ses.user.id){S.user=ses.user;setTimeout(boot,0)}
+ else if(!ses)authView();
+});
+
+/* ---------- DATA ---------- */
+async function boot(){
+ root.innerHTML='<div class="spin" role="status" aria-label="Loading"></div>';
+ try{
+  const q=t=>sb.from(t).select('*');
+  const [tx,bu,go,pr,pf]=await Promise.all([q('transactions').order('date',{ascending:false}).order('created_at',{ascending:false}),q('budgets'),q('goals').order('created_at'),q('profiles').eq('id',S.user.id).maybeSingle(),q('notification_prefs').eq('user_id',S.user.id).maybeSingle()]);
+  for(const r of [tx,bu,go,pr,pf])if(r.error)throw r.error;
+  Object.assign(S,{tx:tx.data,bud:bu.data,goals:go.data,prof:pr.data,pref:pf.data});
+  shell();
+ }catch(e){root.innerHTML=`<div class="empty" style="padding-top:30vh"><b>We could not load your data</b>${esc(e.message||'')}<br><br><button class="btn sm" onclick="boot()">Try again</button></div>`}
+}
+const ins=async(t,row)=>{const {data,error}=await sb.from(t).insert(row).select().single();if(error)throw error;return data};
+
+/* ---------- SHELL ---------- */
+const NAV=[['dash','◧','Home'],['tx','⇅','Spending'],['bud','◔','Budgets'],['goal','✦','Goals'],['set','⚙','Settings']];
+function shell(){
+ root.innerHTML=`<div class="app"><aside class="side"><div class="logo"><i></i>Spendly</div>${NAV.map(n=>`<button class="nav ${S.view===n[0]?'on':''}" data-v="${n[0]}"><span aria-hidden="true">${n[1]}</span>${n[2]}</button>`).join('')}<div class="push" style="flex:1"></div><button class="nav" id="lo">Log out</button></aside><main id="m"></main></div>`;
+ root.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{S.view=b.dataset.v;shell()});
+ $('#lo').onclick=()=>sb.auth.signOut();
+ ({dash,tx,bud,goal,set}[S.view])();
+}
+const sum=(f)=>S.tx.filter(f).reduce((a,t)=>a+Number(t.amount),0);
+const exp=t=>t.type==='expense',inc=t=>t.type==='income';
+function ranges(){const n=new Date(),td=iso(n),wd=new Date(n);wd.setDate(n.getDate()-((n.getDay()+6)%7));return{td,wk:iso(wd),mo:td.slice(0,7)}}
+function txItem(t,del){return`<div class="item"><div class="dot">${esc(t.category[0])}</div><div class="grow"><div>${esc(t.note||t.category)}</div><div class="k">${esc(t.category)} · ${esc(t.date)}</div></div><b class="${t.type==='income'?'in':'out'}">${t.type==='income'?'+':'−'}${money(t.amount)}</b>${del?`<button class="x" data-del="${t.id}" aria-label="Delete transaction">✕</button>`:''}</div>`}
+function bindDel(){document.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{if(!confirm('Delete this transaction?'))return;const {error}=await sb.from('transactions').delete().eq('id',b.dataset.del);if(error)return fail(error);S.tx=S.tx.filter(t=>t.id!==b.dataset.del);shell();toast('Deleted')})}
+function greet(){const h=new Date().getHours();return(h<12?'Good morning':h<17?'Good afternoon':'Good evening')+(S.prof?.display_name?', '+esc(S.prof.display_name.split(' ')[0]):'')}
+
+function dash(){
+ const r=ranges(),mo=sum(t=>exp(t)&&t.date.startsWith(r.mo)),mi=sum(t=>inc(t)&&t.date.startsWith(r.mo));
+ const days=[...Array(14)].map((_,i)=>{const d=new Date();d.setDate(d.getDate()-13+i);const k=iso(d);return{k,v:sum(t=>exp(t)&&t.date===k)}}),mx=Math.max(1,...days.map(d=>d.v));
+ $('#m').innerHTML=`<div class="top"><h1>${greet()}</h1><button class="btn sm" data-v="tx">Add transaction</button></div>
+ <div class="grid g3"><div class="card hero"><small>Spent this month</small><div class="num">${money(mo)}</div><div class="row"><div><small>Today</small><b>${money(sum(t=>exp(t)&&t.date===r.td))}</b></div><div><small>This week</small><b>${money(sum(t=>exp(t)&&t.date>=r.wk))}</b></div><div><small>Income this month</small><b>${money(mi)}</b></div><div><small>Net</small><b>${money(mi-mo)}</b></div></div></div></div>
+ <div class="grid g2" style="margin-top:16px"><div class="card"><h3>Last 14 days</h3>${S.tx.length?`<svg viewBox="0 0 280 110" width="100%" role="img" aria-label="Daily spending, last 14 days">${days.map((d,i)=>`<rect x="${i*20+3}" y="${100-d.v/mx*90}" width="14" height="${Math.max(2,d.v/mx*90)}" rx="5" fill="${d.k===r.td?'#4F46E5':'#C9C5FA'}"><title>${d.k}: ${money(d.v)}</title></rect>`).join('')}</svg>`:'<div class="empty"><b>No spending yet</b>Add your first transaction to see your trend.</div>'}</div>
+ <div class="card"><h3>Recent</h3>${S.tx.length?S.tx.slice(0,5).map(t=>txItem(t)).join(''):'<div class="empty"><b>Nothing logged</b>Your entries will show here.</div>'}</div></div>`;
+ $('#m [data-v]').onclick=()=>{S.view='tx';shell()};
+}
+function tx(){
+ const r=ranges();let list=S.tx;if(S.filter==='today')list=list.filter(t=>t.date===r.td);if(S.filter==='week')list=list.filter(t=>t.date>=r.wk);if(S.filter==='month')list=list.filter(t=>t.date.startsWith(r.mo));
+ $('#m').innerHTML=`<div class="top"><h1>Spending</h1></div><form class="card" id="tf"><div class="seg" style="margin-bottom:14px"><button type="button" data-t="expense" class="${S.type==='expense'?'on':''}">Expense</button><button type="button" data-t="income" class="${S.type==='income'?'on':''}">Income</button></div>
+ <div class="form"><div><label for="a">Amount (₹)</label><input id="a" type="number" min="0.01" max="99999999" step="0.01" inputmode="decimal" required></div><div><label for="c">Category</label><select id="c">${CATS.map(c=>`<option>${c}</option>`).join('')}</select></div><div><label for="n">Note</label><input id="n" maxlength="200" placeholder="Lunch"></div><div><label for="d">Date</label><input id="d" type="date" value="${r.td}" required></div><button class="btn">Add</button></div></form>
+ <div class="seg" style="margin:18px 0">${['all','today','week','month'].map(f=>`<button data-f="${f}" class="${S.filter===f?'on':''}">${f[0].toUpperCase()+f.slice(1)}</button>`).join('')}</div>
+ <div class="card">${list.length?list.map(t=>txItem(t,1)).join(''):'<div class="empty"><b>No transactions here</b>Add one above to get started.</div>'}</div>`;
+ document.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{S.type=b.dataset.t;tx()});
+ document.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{S.filter=b.dataset.f;tx()});
+ $('#tf').onsubmit=async e=>{e.preventDefault();const amt=Number($('#a').value);if(!(amt>0))return toast('Enter an amount above 0');
+  try{const row=await ins('transactions',{type:S.type,amount:amt,category:$('#c').value,note:$('#n').value.trim().slice(0,200),date:$('#d').value});S.tx.unshift(row);S.tx.sort((a,b)=>b.date.localeCompare(a.date));tx();toast('Added')}catch(x){fail(x)}};
+ bindDel();
+}
+function bud(){
+ const mo=ranges().mo;
+ $('#m').innerHTML=`<div class="top"><h1>Budgets</h1></div><form class="card" id="bf"><div class="form"><div><label for="bc">Category</label><select id="bc">${CATS.map(c=>`<option>${c}</option>`).join('')}</select></div><div><label for="bl">Monthly limit (₹)</label><input id="bl" type="number" min="1" step="1" required></div><button class="btn">Save budget</button></div></form>
+ <div class="grid" style="margin-top:16px">${S.bud.length?S.bud.map(b=>{const s=sum(t=>exp(t)&&t.category===b.category&&t.date.startsWith(mo)),p=Math.min(100,s/b.monthly_limit*100);return`<div class="card"><div class="item" style="border:0;padding:0"><div class="grow"><div>${esc(b.category)}</div><div class="k">${money(s)} of ${money(b.monthly_limit)}</div></div><b class="${s>b.monthly_limit?'out':''}">${Math.round(s/b.monthly_limit*100)}%</b><button class="x" data-bd="${b.id}" aria-label="Delete budget">✕</button></div><div class="bar"><i class="${s>b.monthly_limit?'over':''}" style="width:${p}%"></i></div></div>`}).join(''):'<div class="card empty"><b>No budgets yet</b>Set a monthly limit for a category above.</div>'}</div>`;
+ $('#bf').onsubmit=async e=>{e.preventDefault();const {data,error}=await sb.from('budgets').upsert({user_id:S.user.id,category:$('#bc').value,monthly_limit:Number($('#bl').value)},{onConflict:'user_id,category'}).select().single();if(error)return fail(error);S.bud=[...S.bud.filter(b=>b.category!==data.category),data];bud();toast('Saved')};
+ document.querySelectorAll('[data-bd]').forEach(b=>b.onclick=async()=>{const {error}=await sb.from('budgets').delete().eq('id',b.dataset.bd);if(error)return fail(error);S.bud=S.bud.filter(x=>x.id!==b.dataset.bd);bud()});
+}
+function goal(){
+ $('#m').innerHTML=`<div class="top"><h1>Savings goals</h1></div><form class="card" id="gf"><div class="form"><div><label for="gn">Goal</label><input id="gn" maxlength="80" required></div><div><label for="gt">Target (₹)</label><input id="gt" type="number" min="1" required></div><button class="btn">Create goal</button></div></form>
+ <div class="grid" style="margin-top:16px">${S.goals.length?S.goals.map(g=>`<div class="card"><div class="item" style="border:0;padding:0"><div class="grow"><div>${esc(g.name)}</div><div class="k">${money(g.saved)} of ${money(g.target)}</div></div><button class="btn sm alt" data-ga="${g.id}">Add savings</button><button class="x" data-gd="${g.id}" aria-label="Delete goal">✕</button></div><div class="bar"><i style="width:${Math.min(100,g.saved/g.target*100)}%"></i></div></div>`).join(''):'<div class="card empty"><b>No goals yet</b>Name something you are saving for.</div>'}</div>`;
+ $('#gf').onsubmit=async e=>{e.preventDefault();try{S.goals.push(await ins('goals',{name:$('#gn').value.trim(),target:Number($('#gt').value)}));goal()}catch(x){fail(x)}};
+ document.querySelectorAll('[data-ga]').forEach(b=>b.onclick=async()=>{const v=Number(prompt('Amount to add (₹)'));if(!(v>0))return;const g=S.goals.find(x=>x.id===b.dataset.ga);const {data,error}=await sb.from('goals').update({saved:Number(g.saved)+v}).eq('id',g.id).select().single();if(error)return fail(error);Object.assign(g,data);goal()});
+ document.querySelectorAll('[data-gd]').forEach(b=>b.onclick=async()=>{if(!confirm('Delete this goal?'))return;const {error}=await sb.from('goals').delete().eq('id',b.dataset.gd);if(error)return fail(error);S.goals=S.goals.filter(x=>x.id!==b.dataset.gd);goal()});
+}
+function set(){
+ const p=S.pref||{email_enabled:true,push_enabled:false,morning_time:'08:30',evening_time:'20:30'};
+ $('#m').innerHTML=`<div class="top"><h1>Settings</h1></div><div class="grid"><form class="card" id="pf"><h3>Profile</h3><label for="dn">Display name</label><input id="dn" maxlength="60" value="${esc(S.prof?.display_name||'')}"><p class="k" style="margin-top:8px">Signed in as ${esc(S.user.email)}</p><button class="btn sm" style="margin-top:14px">Save profile</button></form>
+ <form class="card" id="nf"><h3>Reminders</h3><p class="k">A gentle nudge to log your spending. No lectures.</p><div class="sw"><span>Email reminders</span><input type="checkbox" id="ee" ${p.email_enabled?'checked':''}></div><div class="sw"><span>Browser notifications</span><input type="checkbox" id="pe" ${p.push_enabled?'checked':''}></div><div class="form" style="margin-top:12px"><div><label for="mt">Morning</label><input id="mt" type="time" value="${esc(String(p.morning_time).slice(0,5))}"></div><div><label for="et">Evening</label><input id="et" type="time" value="${esc(String(p.evening_time).slice(0,5))}"></div></div><button class="btn sm" style="margin-top:14px">Save reminders</button></form>
+ <div class="card"><h3>Privacy & account</h3><button class="btn sm alt" id="pv">Read privacy policy</button> <button class="btn sm danger" id="del">Delete my account</button></div></div>`;
+ $('#pf').onsubmit=async e=>{e.preventDefault();const {data,error}=await sb.from('profiles').upsert({id:S.user.id,display_name:$('#dn').value.trim().slice(0,60)}).select().single();if(error)return fail(error);S.prof=data;toast('Saved')};
+ $('#nf').onsubmit=async e=>{e.preventDefault();if($('#pe').checked&&'Notification'in window&&Notification.permission==='default')await Notification.requestPermission();
+  const {data,error}=await sb.from('notification_prefs').upsert({user_id:S.user.id,email_enabled:$('#ee').checked,push_enabled:$('#pe').checked,morning_time:$('#mt').value,evening_time:$('#et').value,timezone:Intl.DateTimeFormat().resolvedOptions().timeZone}).select().single();if(error)return fail(error);S.pref=data;toast('Saved')};
+ $('#pv').onclick=()=>{const m=document.createElement('div');m.className='modal';m.innerHTML=`<div class="card" role="dialog" aria-modal="true"><h3>Privacy policy</h3><p>Spendly stores only what you enter: your email, display name, transactions, budgets, goals and reminder settings. Each record is tied to your account and protected by database access rules so only you can read or change it.</p><p style="margin-top:10px">We use your email for sign-in, verification, password resets and the reminders you turn on. We do not sell your data. You can delete your account in Settings, which permanently removes your account and all records.</p><p style="margin-top:10px" class="k">Replace this draft with your final policy, reviewed for your jurisdiction, before launch.</p><button class="btn sm" style="margin-top:14px" id="cl">Close</button></div>`;document.body.append(m);$('#cl').onclick=()=>m.remove()};
+ $('#del').onclick=async()=>{if(prompt('This permanently deletes your account and all data. Type DELETE to confirm.')!=='DELETE')return;
+  const {data:{session}}=await sb.auth.getSession();const r=await fetch('/api/delete-account',{method:'POST',headers:{Authorization:'Bearer '+session.access_token}});
+  if(!r.ok)return toast('Could not delete the account. Try again.');await sb.auth.signOut();toast('Account deleted')};
+}
+/* reminders while the app is open (background email/push needs the server job in the README) */
+setInterval(()=>{const p=S.pref;if(!S.user||!p?.push_enabled||!('Notification'in window)||Notification.permission!=='granted')return;const n=new Date(),hm=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+ if([String(p.morning_time).slice(0,5),String(p.evening_time).slice(0,5)].includes(hm)&&sessionStorage.getItem('rem')!==hm+iso(n)){sessionStorage.setItem('rem',hm+iso(n));new Notification('Spendly',{body:'Take a moment to log your spending.'})}},20000);
+</script></body></html>
